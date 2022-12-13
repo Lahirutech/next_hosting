@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { object, string, TypeOf } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 
 const createUserSchema = object({
-  name: string().min(1, {
+  firstName: string().min(1, {
     message: "Name is required",
   }),
   password: string()
@@ -45,6 +46,16 @@ function RegisterPage() {
 
   const onSubmit = async (values: CreateserInput) => {
     console.log("values", values);
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_ENDPOINT}/api/users`,
+        values
+      );
+      router.push("/");
+    } catch (e: any) {
+      console.log("reg error", e);
+      setRegisterError(e.message);
+    }
   };
 
   return (
@@ -63,14 +74,14 @@ function RegisterPage() {
         </div>
 
         <div className="form-element">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="firstName">Name</label>
           <input
-            id="name"
+            id="firstName"
             type="text"
             placeholder="Jane Doe"
-            {...register("name")}
+            {...register("firstName")}
           />
-          <p>{errors.name?.message}</p>
+          <p>{errors.firstName?.message}</p>
         </div>
 
         <div className="form-element">
